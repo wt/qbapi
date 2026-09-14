@@ -27,9 +27,15 @@ This tool is very new. Contributions for missing functionality would be amazing.
    ```
 
 
-# Using
+# A Note on Auth Profiles
 
-The tools has profiles so that you can have mutliple tokens. Looks in the arguments for various subcommands for the `profile` argument.
+This tool supports multiples auth profiles so that you can have mutliple tokens. You can select
+which environment a profile is for when creating a new profile.
+
+To delete profiles, you will need to delete them from the backing store manually. For the Secret
+Service, I use [KeepSecret](https://apps.kde.org/keepsecret/).
+
+The default profile is called "default", and there is no way to change that yet.
 
 
 # Contributing
