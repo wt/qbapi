@@ -41,35 +41,11 @@ impl Client {
         client_secret: impl AsRef<str>,
         redirect_url: Option<Url>,
     ) -> Result<OIDClient, Error> {
-        let client_id = client_id.as_ref();
-        let client_secret = client_secret.as_ref();
-
-        let redirect_url = redirect_url.map(|u| u.into());
-
-        match self.environment {
-            Environment::Production => Ok(DiscoveredClient::discover(
-                client_id.to_owned(),
-                client_secret.to_owned(),
-                redirect_url,
-                Url::parse("https://developer.api.intuit.com/").expect("Invalid url for issuer"),
-            )
-            .await?),
-            Environment::Sandbox => {
-                let http_client = reqwest::Client::new();
-                let config = qb_sandbox_provider_config().await?;
-                let jwks = openid::jwks(&http_client, config.jwks_uri.clone()).await?;
-                let provider = config.into();
-
-                Ok(openid::Client::new(
-                    provider,
-                    client_id.into(),
-                    Some(client_secret.into()),
-                    redirect_url,
-                    reqwest::Client::new(),
-                    Some(jwks),
-                ))
-            }
-        }
+        let mut client = self
+            .oauth_client_without_redirect(client_id, client_secret)
+            .await?;
+        client.redirect_uri = redirect_url.map(|u| u.into());
+        Ok(client)
     }
 
     pub async fn oauth_client_without_redirect(
