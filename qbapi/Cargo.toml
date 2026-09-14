@@ -1,7 +1,10 @@
 [package]
 name = "qbapi"
+description = "A crate for interacting with Intuit's Quickbooks Online APIs."
 version = "0.1.0"
 edition = "2024"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/wt/qbapi/tree/main/qbapi"
 
 [dependencies]
 openid = { version = "0.24.0", features = ["rustls"] }
