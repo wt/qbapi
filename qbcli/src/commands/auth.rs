@@ -3,6 +3,7 @@ use directories::ProjectDirs;
 use oo7::Keyring;
 use openid::Token;
 use tracing::{debug, info};
+use url::Url;
 
 use crate::config::get_oauth_creds;
 use crate::util::auth::{
@@ -52,6 +53,10 @@ pub(crate) struct LoginArgs {
 
     #[arg(short('r'), long)]
     realm: Option<String>,
+
+    /// The redirect url for the OAuth workflow.
+    #[arg(long, default_value = "https://localhost:9999/")]
+    redirect_url: Url,
 }
 
 pub(crate) async fn do_auth(auth_args: &AuthArgs, project_dirs: &ProjectDirs) -> Result<()> {
@@ -75,8 +80,7 @@ pub(crate) async fn do_login(login_args: &LoginArgs, project_dirs: &ProjectDirs)
         .oauth_client(
             &app_creds.client_id,
             &app_creds.client_secret,
-            Some(&login_args.listen_host),
-            Some(login_args.listen_port),
+            Some(login_args.redirect_url.clone()),
         )
         .await?;
 

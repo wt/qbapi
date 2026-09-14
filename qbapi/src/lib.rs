@@ -39,28 +39,18 @@ impl Client {
         &self,
         client_id: impl AsRef<str>,
         client_secret: impl AsRef<str>,
-        redirect_listen_host: Option<&str>,
-        redirect_listen_port: Option<u16>,
+        redirect_url: Option<Url>,
     ) -> Result<OIDClient, Error> {
         let client_id = client_id.as_ref();
         let client_secret = client_secret.as_ref();
 
-        let redirect = match (redirect_listen_host, redirect_listen_port) {
-            (Some(h), Some(p)) => Some(format!("https://{}:{}", h, p)),
-            (None, None) => None,
-            _ => {
-                return Err(Error::InvalidRedirectUri(
-                    "Redirect host:port invalid. Either both or neither should be provided."
-                        .to_owned(),
-                ));
-            }
-        };
+        let redirect_url = redirect_url.map(|u| u.into());
 
         match self.environment {
             Environment::Production => Ok(DiscoveredClient::discover(
                 client_id.to_owned(),
                 client_secret.to_owned(),
-                redirect,
+                redirect_url,
                 Url::parse("https://developer.api.intuit.com/").expect("Invalid url for issuer"),
             )
             .await?),
@@ -74,7 +64,7 @@ impl Client {
                     provider,
                     client_id.into(),
                     Some(client_secret.into()),
-                    redirect,
+                    redirect_url,
                     reqwest::Client::new(),
                     Some(jwks),
                 ))
