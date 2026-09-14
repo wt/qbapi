@@ -147,6 +147,7 @@ pub(crate) fn get_login_response_server(
     .workers(1)
     .shutdown_signal(shutdown_signal.cancelled_owned())
     .keep_alive(None)
+    .shutdown_timeout(0)
     .bind_rustls_0_23(("127.0.0.1", port), tls_config.clone())?
     .bind_rustls_0_23(("::1", port), tls_config.clone())?
     //.bind(("127.0.0.1", port))
