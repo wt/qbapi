@@ -1,5 +1,3 @@
-use std::cell::LazyCell;
-
 use openid::{Client as OIDClient, DiscoveredClient};
 use url::Url;
 
@@ -9,12 +7,8 @@ pub mod accounting;
 pub mod auth;
 pub mod error;
 
-pub const SANDBOX_BASE_URL: LazyCell<Url> = LazyCell::new(|| {
-    Url::parse("https://sandbox-quickbooks.api.intuit.com/").expect("Bad base sandbox Url")
-});
-pub const PRODUCTION_BASE_URL: LazyCell<Url> = LazyCell::new(|| {
-    Url::parse("https://quickbooks.api.intuit.com/").expect("Bad base sandbox Url")
-});
+pub static SANDBOX_BASE_URL: &str = "https://sandbox-quickbooks.api.intuit.com/";
+pub static PRODUCTION_BASE_URL: &str = "https://quickbooks.api.intuit.com/";
 
 pub enum Environment {
     Production,
@@ -29,8 +23,10 @@ pub struct Client {
 impl Client {
     pub fn new(environment: Environment) -> Self {
         let base_url = match environment {
-            Environment::Production => PRODUCTION_BASE_URL,
-            Environment::Sandbox => SANDBOX_BASE_URL,
+            Environment::Production => {
+                Url::parse(PRODUCTION_BASE_URL).expect("Bad base production Url")
+            }
+            Environment::Sandbox => Url::parse(SANDBOX_BASE_URL).expect("Bad base sandbox Url"),
         }
         .clone();
         Self {
