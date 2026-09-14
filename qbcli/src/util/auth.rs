@@ -193,24 +193,23 @@ pub async fn get_qb_auth_data(
     tokio::task::spawn_blocking(move || opener::open_browser(url.as_ref())).await??;
 
     // wait for response
-    let received_data;
-    loop {
-        info!("Waiting for token from login process...");
-        match rx.recv().await {
-            Some(auth_data) => {
-                received_data = auth_data;
-                break;
-            }
-            None => {
-                info!("Auth data channel was closed before receiving anything...");
-                exit(1);
-            }
+    info!("Waiting for token from login process...");
+    let received_data = match rx.recv().await {
+        Some(auth_data) => auth_data,
+        None => {
+            info!("Auth data channel was closed before receiving anything...");
+            exit(1);
         }
-    }
+    };
     info!("Received data: {:#?}", received_data);
 
     // signal shutdown to server
     server_shutdown_token.cancel();
+
+    // The channel sender should be dropped, so None is expected.
+    if let Some(_) = rx.recv().await {
+        unreachable!()
+    };
 
     // handle errors
     if let Some(expected_realm) = realm
