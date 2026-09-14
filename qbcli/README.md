@@ -34,11 +34,7 @@ The tools has profiles so that you can have mutliple tokens. Looks in the argume
 
 # Contributing
 
-Make and change, and send a PR. All PRs are assumed to be licensed identially to the main code base.
-
-For bigger changes, please open an issue for discussion so that you aren't wasting your time. PRs
-are fine for discussion as well. However, I would hate for you to wasted your time with a design
-that will not be accepted.
+Contributions are very welcome. Please see https://github.com/wt/qbapi/blob/main/README.md.
 
 
 # Privacy Policy
