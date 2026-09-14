@@ -43,6 +43,7 @@ pub(crate) struct LoginArgs {
     /// Quickbooks environment for auth
     #[arg(
         short('e'),
+        long,
         value_enum,
         default_value_t = AuthEnvironment::Sandbox,
     )]
