@@ -56,13 +56,13 @@ pub(crate) struct LoginArgs {
 
 pub(crate) async fn do_auth(auth_args: &AuthArgs, project_dirs: &ProjectDirs) -> Result<()> {
     match auth_args.subcommand {
-        SubCommands::Login(ref login_args) => do_login(login_args, &project_dirs).await?,
+        SubCommands::Login(ref login_args) => do_login(login_args, project_dirs).await?,
     }
     Ok(())
 }
 
 pub(crate) async fn do_login(login_args: &LoginArgs, project_dirs: &ProjectDirs) -> Result<()> {
-    let config = read_config_data_from_config_file(&project_dirs)?;
+    let config = read_config_data_from_config_file(project_dirs)?;
     let profile = login_args.profile_args.profile(&config);
     info!("profile name: {profile}");
 
@@ -82,7 +82,7 @@ pub(crate) async fn do_login(login_args: &LoginArgs, project_dirs: &ProjectDirs)
 
     let mut qb_auth_data = match login_args.disable_token_refresh {
         true => request_new_token(login_args, &oauth_client).await?,
-        false => match get_stored_profile_auth_token(&keyring, &profile).await? {
+        false => match get_stored_profile_auth_token(&keyring, profile).await? {
             Some(mut data) => {
                 let oauth_client = api_client
                     .oauth_client_without_redirect(&app_creds.client_id, &app_creds.client_secret)
@@ -97,7 +97,7 @@ pub(crate) async fn do_login(login_args: &LoginArgs, project_dirs: &ProjectDirs)
 
     // This must happen every time in order for requesting userinfo to work.
     oauth_client.decode_token(
-        &mut qb_auth_data
+        qb_auth_data
             .token
             .id_token
             .as_mut()
@@ -116,7 +116,7 @@ pub(crate) async fn do_login(login_args: &LoginArgs, project_dirs: &ProjectDirs)
 
     store_access_key(
         &keyring,
-        &profile,
+        profile,
         &login_args.environment.arg_string(),
         &qb_auth_data.realm,
         &qb_auth_data.token,

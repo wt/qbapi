@@ -43,7 +43,7 @@ pub async fn get_stored_profile_auth_token(
                 debug!("bearer: {:#?}", bearer);
 
                 let mut attrs = item.attributes().await?;
-                let realm_id = attrs.remove("realm").unwrap();
+                let realm = attrs.remove("realm").unwrap();
                 let environment = attrs.remove("environment").unwrap();
 
                 let token = Token::from(bearer);
@@ -53,8 +53,8 @@ pub async fn get_stored_profile_auth_token(
 
                 Some(QBAuthData {
                     environment: auth_env,
-                    realm: realm_id.to_owned(),
-                    token: token,
+                    realm: realm.to_owned(),
+                    token,
                 })
             }
             None => None,
@@ -183,7 +183,7 @@ pub async fn get_qb_auth_data(
     let server = get_login_response_server(
         tx,
         server_shutdown_token.child_token(),
-        &listen_host,
+        listen_host,
         listen_port,
         Arc::new(encoded_state),
     )?;
@@ -230,9 +230,9 @@ pub async fn get_qb_auth_data(
     Ok(received_data)
 }
 
-const SECRET_SERVICE_SERVER: &'static str = "qbcli";
+const SECRET_SERVICE_SERVER: &str = "qbcli";
 
-pub async fn store_access_key<'a>(
+pub async fn store_access_key(
     keyring: &Keyring,
     profile: &str,
     environment: &str,
@@ -252,8 +252,8 @@ pub async fn store_access_key<'a>(
     attributes.extend([("environment", environment), ("realm", realm_id)]);
 
     match items.len() {
-        n if n == 0 => {}
-        n if n == 1 => {
+        0 => {}
+        1 => {
             // check to make sure it's the same
             let item = &items[0];
             let found_attributes = item.attributes().await?;
@@ -264,7 +264,7 @@ pub async fn store_access_key<'a>(
             }
             if !attributes
                 .iter()
-                .all(|(key, value)| found_attributes.get(*key).map_or(false, |v| *value == *v))
+                .all(|(key, value)| found_attributes.get(*key).is_some_and(|v| *value == *v))
             {
                 debug!("found_attributes: {found_attributes:#?}");
                 debug!("attributes: {attributes:#?}");
@@ -303,7 +303,7 @@ pub async fn store_access_key<'a>(
     Ok(())
 }
 
-pub async fn get_stored_profile_auth_data<'a>(
+pub async fn get_stored_profile_auth_data(
     keyring: &Keyring,
     profile_name: &str,
 ) -> Result<Option<Item>> {

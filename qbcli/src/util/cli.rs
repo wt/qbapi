@@ -8,9 +8,8 @@ pub struct ProfileArgs {
 
 impl ProfileArgs {
     pub fn profile<'a>(&'a self, config_data: &'a ConfigData<'a>) -> &'a str {
-        self.profile.as_ref().map_or_else(
-            || config_data.default_profile().unwrap_or_else(|| "default"),
-            |x| x,
-        )
+        self.profile
+            .as_ref()
+            .map_or_else(|| config_data.default_profile().unwrap_or("default"), |x| x)
     }
 }

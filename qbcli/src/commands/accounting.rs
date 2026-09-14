@@ -41,7 +41,7 @@ pub async fn do_accounting(
     accounting_args: &AccountingArgs,
     project_dirs: &ProjectDirs,
 ) -> Result<()> {
-    let config = read_config_data_from_config_file(&project_dirs)?;
+    let config = read_config_data_from_config_file(project_dirs)?;
     let profile = accounting_args.profile_args.profile(&config);
     let keyring = Keyring::new().await?;
     let mut qb_auth_data = get_stored_profile_auth_token(&keyring, profile)
@@ -87,8 +87,8 @@ pub async fn do_company_info(
         format!(
             "{}{}/companyinfo/{}",
             qbapi::accounting::BASE_URL_FRAGMENT,
-            &qb_auth_data.realm,
-            &qb_auth_data.realm
+            qb_auth_data.realm,
+            qb_auth_data.realm
         )
         .as_ref(),
     )?;
@@ -118,7 +118,7 @@ async fn do_query(
         format!(
             "{}{}/query",
             qbapi::accounting::BASE_URL_FRAGMENT,
-            &qb_auth_data.realm
+            qb_auth_data.realm
         )
         .as_ref(),
     )?;

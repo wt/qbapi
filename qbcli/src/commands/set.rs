@@ -36,7 +36,7 @@ async fn do_default_profile_subcommand(
     default_profile_args: &DefaultProfileArgs,
     project_dirs: &ProjectDirs,
 ) -> Result<()> {
-    let auth_data = read_config_data_from_config_file(&project_dirs)?;
+    let auth_data = read_config_data_from_config_file(project_dirs)?;
 
     match &default_profile_args.profile {
         Some(profile) => {
