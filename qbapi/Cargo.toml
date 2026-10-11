@@ -7,7 +7,7 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/wt/qbapi/tree/main/qbapi"
 
 [dependencies]
-openid = { version = "0.24.0", features = ["rustls"] }
+openid = { version = "0.25", default-features = false, features = ["rustls"] }
 reqwest = { version = "0.13.5", features = ["rustls"] }
 serde = { version = "1.0.229", features = ["derive"] }
 thiserror = "2.0.20"

@@ -21,16 +21,6 @@ pub struct QBAuthData {
     pub token: Token,
 }
 
-impl QBAuthData {
-    pub async fn refresh_token(&mut self, oauth_client: &Client) -> Result<()> {
-        let old_token = Box::new(self.token.bearer.clone());
-        self.token.bearer = oauth_client.refresh_token(&old_token, None).await?;
-        // manually copy over the old id_token so that it isn't lost
-        self.token.bearer.id_token = old_token.id_token;
-        Ok(())
-    }
-}
-
 pub async fn get_stored_profile_auth_token(
     keyring: &Keyring,
     profile: &str,

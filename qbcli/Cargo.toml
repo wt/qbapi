@@ -17,7 +17,7 @@ http = "1.4.2"
 indoc = "2.0.7"
 oo7 = { version = "0.6.0", features = ["tracing"] }
 opener = "0.8.5"
-openid = { version = "0.24", default-features = false, features = ["rustls"] }
+openid = { version = "0.25", default-features = false, features = ["rustls"] }
 qbapi = { path = "../qbapi", version = "0.1.0" }
 rand = "0.10.2"
 reqwest = { version = "0.13.4", features = ["rustls"]} #, default-features = false }

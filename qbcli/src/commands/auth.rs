@@ -93,7 +93,9 @@ pub(crate) async fn do_login(login_args: &LoginArgs, project_dirs: &ProjectDirs)
                     .oauth_client_without_redirect(&app_creds.client_id, &app_creds.client_secret)
                     .await?;
 
-                data.refresh_token(&oauth_client).await?;
+                let bearer = Box::new(data.token.bearer);
+                let bearer = oauth_client.refresh_token(bearer, None).await?;
+                data.token.bearer = bearer;
                 data
             }
             None => request_new_token(login_args, &oauth_client).await?,
